@@ -3,7 +3,8 @@
 
 import logging
 import telegram
-from telegram.ext import Updater, MessageHandler, Filters
+from telegram.ext import Updater, MessageHandler, Filters, CommandHandler
+from telegram import ReplyKeyboardMarkup
 
 from mangalib_parser import mangalib_parser
 from mangapoisk_parser import parser_mangapoisk
@@ -43,6 +44,17 @@ def download_manga(update, context):
     update.message.reply_text('Готово')
 
 
+reply_keyboard = [['/help']]
+markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False)
+
+
+def help(update, context):
+    update.message.reply_text(
+        open('data/text/help.txt', encoding='utf-8').read(),
+        reply_markup=markup
+    )
+
+
 def main():
     # Создаём объект updater.
 
@@ -71,10 +83,13 @@ def main():
     # После регистрации обработчика в диспетчере
     # эта функция будет вызываться при получении сообщения
     # с типом "текст", т. е. текстовых сообщений.
-    text_handler = MessageHandler(Filters.text, download_manga)
-
+    text_handler = MessageHandler(Filters.text & ~Filters.command, download_manga)
     # Регистрируем обработчик в диспетчере.
     dp.add_handler(text_handler)
+
+    dp.add_handler(CommandHandler("help", help))
+    dp.add_handler(CommandHandler("start", help))
+
     # Запускаем цикл приема и обработки сообщений.
     updater.start_polling()
 
