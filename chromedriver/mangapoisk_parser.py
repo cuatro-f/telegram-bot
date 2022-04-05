@@ -38,7 +38,9 @@ def parser_mangapoisk(url):
     soup = BeautifulSoup(content, features="lxml")
     # список всех тегов, которые содержат ссылки на страницы манги
     # все страницы находятся в блоке с тегом div, класс тега - chapter-images
+    print(soup.find_all("div", class_="chapter-images"))
     items = soup.find_all("div", class_="chapter-images")[0].find_all("img")
+
 
     # Список с ссылками на все страницы
     array = []
