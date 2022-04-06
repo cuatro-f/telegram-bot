@@ -2,6 +2,8 @@
 # t.me/dup_durup_dup_bot
 
 import logging
+import os
+
 import telegram
 from telegram.ext import Updater, MessageHandler, Filters, CommandHandler
 from telegram import ReplyKeyboardMarkup
@@ -9,6 +11,7 @@ from telegram import ReplyKeyboardMarkup
 from mangalib_parser import mangalib_parser
 from mangapoisk_parser import parser_mangapoisk
 from proxy_parser import get_one_proxy
+
 
 # Запускаем логгирование
 logging.basicConfig(
@@ -36,12 +39,21 @@ REQUEST_KWARGS = {
 
 def download_manga(update, context):
     url = update.message.text
+    if 'https://mangapoisk.ru' not in url and 'https://mangalib.me' not in url:
+        update.message.reply_text('Наверное вы ввели неверную ссылку~')
+        return
     update.message.reply_text('Идет скачиваение...')
-    # mangalib_parser(url)
-    print(url)
-    # url = 'https://mangapoisk.ru/manga/berserk/chapter/26-240'
-    parser_mangapoisk(url)
-    update.message.reply_text('Готово')
+    if 'https://mangapoisk.ru' in url:
+        zip_dir = parser_mangapoisk(url)
+    elif 'https://mangalib.me' in url:
+        zip_dir = mangalib_parser(url)
+    else:
+        update.message.reply_text('Наверное вы ввели неверную ссылку~')
+        return
+    context.bot.send_document(chat_id=update.message.chat_id, document=open(zip_dir, 'rb'))
+    # удаляем архив
+    os.remove(zip_dir)
+    # update.message.reply_text('Готово')
 
 
 reply_keyboard = [['/help']]
@@ -53,6 +65,12 @@ def help(update, context):
         open('data/text/help.txt', encoding='utf-8').read(),
         reply_markup=markup
     )
+
+
+def zip_my(update, context):
+    context.bot.send_document(chat_id=update.message.chat_id, document=open('manga.7z', 'rb'))
+
+
 
 
 def main():
@@ -89,6 +107,7 @@ def main():
 
     dp.add_handler(CommandHandler("help", help))
     dp.add_handler(CommandHandler("start", help))
+    dp.add_handler(CommandHandler("zip", zip_my))
 
     # Запускаем цикл приема и обработки сообщений.
     updater.start_polling()

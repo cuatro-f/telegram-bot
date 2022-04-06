@@ -2,6 +2,8 @@ from bs4 import BeautifulSoup
 import requests
 from user_agent import choice_user_agent
 import os
+from zipfile import ZipFile
+import shutil
 
 
 # Заголовки
@@ -51,16 +53,22 @@ def parser_mangapoisk(url):
     # Название файла
     title = url.split("/")[4]
     postfix = url.split("/")[-1]
-    os.mkdir(f"data\\manga\\{title}-{postfix}")
-    for i in array[1:]:
-        HEADERS['User-Agent'] = choice_user_agent()
-        img = requests.get(i, headers=HEADERS)
-        out = open(f"data\\manga\\{title}-{postfix}\\page-{page_number}.bmp", "wb")
-        page_number += 1
-        out.write(img.content)
-        out.close()
+    name_dir = f"data\\manga\\{title}-{postfix}"
+    os.mkdir(name_dir)
+    zip_dir = f'data/manga_zip/{title}-{postfix}.zip'
+    with ZipFile(f'data/manga_zip/{title}-{postfix}.zip', 'w') as myzip:
+        for i in array[1:]:
+            HEADERS['User-Agent'] = choice_user_agent()
+            img = requests.get(i, headers=HEADERS)
+            out = open(f"data\\manga\\{title}-{postfix}\\page-{page_number}.bmp", "wb")
+            out.write(img.content)
+            myzip.write(f"data\\manga\\{title}-{postfix}\\page-{page_number}.bmp")
+            page_number += 1
+            out.close()
+    # удаляем созданную папку с картинками
+    shutil.rmtree(name_dir)
 
-    print("end")
+    return zip_dir
 
 
 if __name__ == "__main__":

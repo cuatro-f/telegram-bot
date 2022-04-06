@@ -5,6 +5,8 @@ import time
 import random
 from user_agent import choice_user_agent
 import os
+from zipfile import ZipFile
+import shutil
 
 
 # Парср сайта mangalib
@@ -47,16 +49,22 @@ def mangalib_parser(url):
         page_number = 1
         title = url[0].split("/")[3]
         postfix = url[0].split("/")[4]
-        os.mkdir(f"data\\manga\\{title}-{postfix}")
-        for img_url in pic_urls:
-            page = requests.get(img_url)
-            # out = open(f"manga\\page-{page_number}.bmp", "wb")
-            out = open(f"data\\manga\\{title}-{postfix}\\page-{page_number}.bmp", "wb")
-            page_number += 1
-            out.write(page.content)
-            out.close()
+        name_dir = f"data\\manga\\{title}-{postfix}"
+        os.mkdir(name_dir)
+        zip_dir = f'data/manga_zip/{title}-{postfix}.zip'
+        with ZipFile(f'data/manga_zip/{title}-{postfix}.zip', 'w') as myzip:
+            for img_url in pic_urls:
+                page = requests.get(img_url)
+                # out = open(f"manga\\page-{page_number}.bmp", "wb")
+                out = open(f"data\\manga\\{title}-{postfix}\\page-{page_number}.bmp", "wb")
+                out.write(page.content)
+                myzip.write(f"data\\manga\\{title}-{postfix}\\page-{page_number}.bmp")
+                out.close()
+                page_number += 1
+        # удаляем созданную папку с картинками
+        shutil.rmtree(name_dir)
 
-        print("end")
+        return zip_dir
 
     except Exception as e:
         print("Error")
