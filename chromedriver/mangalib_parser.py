@@ -40,8 +40,8 @@ def mangalib_parser(url, count=1):
 
     title = url[0].split("/")[3]
     postfix = url[0].split("/")[4]
-    name_dir = f"data\\manga\\{title}-{postfix}"
-    os.mkdir(name_dir)
+    name_main_dir = f"data\\manga\\{title}-{postfix}"
+    os.mkdir(name_main_dir)
     zip_dir = f'data\\manga_zip\\{title}-{postfix}.zip'
     res = 0
     with ZipFile(f'data\\manga_zip\\{title}-{postfix}.zip', 'w') as myzip:
@@ -68,7 +68,7 @@ def mangalib_parser(url, count=1):
             postfix = url[0].split("/")[4] + url[0].split("/")[5]
             name_dir = f"{title}-{postfix.replace('?', '')}"
             os.mkdir(name_dir)
-            zip_dir = f'{title}-{postfix.replace("?", "")}.zip'
+            # zip_dir = f'{title}-{postfix.replace("?", "")}.zip'
             for img_url in pic_urls:
                 HEADERS['User-Agent'] = choice_user_agent()
                 page = requests.get(img_url, headers=HEADERS)
@@ -90,6 +90,7 @@ def mangalib_parser(url, count=1):
             url = next_chapter_url
             url = url.split("=")
 
+    os.rmdir(name_main_dir)
     return zip_dir
 
     # except Exception as e:
@@ -101,4 +102,4 @@ def mangalib_parser(url, count=1):
 
 
 if __name__ == "__main__":
-    mangalib_parser("https://mangalib.me/words-and-spirits/v1/c6?page=1")
+    print(mangalib_parser("https://mangalib.me/words-and-spirits/v1/c6?page=1"))

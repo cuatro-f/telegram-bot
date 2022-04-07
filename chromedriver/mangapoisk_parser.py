@@ -36,8 +36,8 @@ def write_html(url):
 def parser_mangapoisk(url, count=3):
     title = url.split("/")[4]
     postfix = url.split("/")[-1]
-    name_dir = f"data\\manga\\{title}-{postfix}"
-    os.mkdir(name_dir)
+    name_main_dir = f"data\\manga\\{title}-{postfix}"
+    os.mkdir(name_main_dir)
     zip_dir = f'data\\manga_zip\\{title}-{postfix}.zip'
     with ZipFile(f'data\\manga_zip\\{title}-{postfix}.zip', 'w') as myzip:
         for _ in range(count):
@@ -76,7 +76,8 @@ def parser_mangapoisk(url, count=3):
             # ссылка на следующую главу
             new_chapter_url = "https://mangapoisk.ru" + soup.find("a", class_="btn-primary").get("href")
             url = new_chapter_url
-
+    # удаление родительской папки
+    os.rmdir(name_main_dir)
     return zip_dir
 
 
