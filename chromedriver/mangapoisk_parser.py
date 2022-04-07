@@ -78,6 +78,7 @@ def parser_mangapoisk(url, count=3):
             url = new_chapter_url
     # удаление родительской папки
     os.rmdir(name_main_dir)
+    print("End")
     return zip_dir
 
 
