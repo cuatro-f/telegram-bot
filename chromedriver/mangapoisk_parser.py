@@ -53,20 +53,20 @@ def parser_mangapoisk(url, count=3):
             array = []
             for item in items:
                 array.append(item.get("data-src"))
-#
+
             page_number = 1
             # Название файла
             title = url.split("/")[4]
             postfix = url.split("/")[-1]
-            name_dir = f"{title}-{postfix}"
+            name_dir = f"{name_main_dir}\\{title}-{postfix}"
             os.mkdir(name_dir)
             # zip_dir = f'{title}-{postfix}.zip'
             for i in array[1:]:
                 HEADERS['User-Agent'] = choice_user_agent()
                 img = requests.get(i, headers=HEADERS)
-                out = open(f"{title}-{postfix}\\page-{page_number}.bmp", "wb")
+                out = open(f"{name_dir}\\page-{page_number}.bmp", "wb")
                 out.write(img.content)
-                myzip.write(f"{title}-{postfix}\\page-{page_number}.bmp")
+                myzip.write(f"{name_dir}\\page-{page_number}.bmp")
                 page_number += 1
                 out.close()
         # удаляем созданную папку с картинками

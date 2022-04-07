@@ -23,7 +23,7 @@ HEADERS = {
 # Если не будет работать, то вот видео а
 # получение страниц манги
 # count - колво глав для загрузки
-def mangalib_parser(url, count=1):
+def mangalib_parser(url, count=2):
     # опции для зпроса, если я правильно понял
     # Возможно, это аналог headers из requests
     options = webdriver.ChromeOptions()
@@ -66,16 +66,16 @@ def mangalib_parser(url, count=1):
             page_number = 1
             title = url[0].split("/")[3]
             postfix = url[0].split("/")[4] + url[0].split("/")[5]
-            name_dir = f"{title}-{postfix.replace('?', '')}"
+            name_dir = f"{name_main_dir}\\{title}-{postfix.replace('?', '')}"
             os.mkdir(name_dir)
             # zip_dir = f'{title}-{postfix.replace("?", "")}.zip'
             for img_url in pic_urls:
                 HEADERS['User-Agent'] = choice_user_agent()
                 page = requests.get(img_url, headers=HEADERS)
                 # out = open(f"manga\\page-{page_number}.bmp", "wb")
-                out = open(f"{title}-{postfix.replace('?', '')}\\page-{page_number}.bmp", "wb")
+                out = open(f"{name_dir}\\page-{page_number}.bmp", "wb")
                 out.write(page.content)
-                myzip.write(f"{title}-{postfix.replace('?', '')}\\page-{page_number}.bmp")
+                myzip.write(f"{name_dir}\\page-{page_number}.bmp")
                 page_number += 1
                 out.close()
         # удаляем созданную папку с картинками
