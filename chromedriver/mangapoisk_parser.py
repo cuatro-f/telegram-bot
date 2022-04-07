@@ -53,7 +53,7 @@ def parser_mangapoisk(url, count=3):
             array = []
             for item in items:
                 array.append(item.get("data-src"))
-
+#
             page_number = 1
             # Название файла
             title = url.split("/")[4]
@@ -71,6 +71,7 @@ def parser_mangapoisk(url, count=3):
                 out.close()
         # удаляем созданную папку с картинками
             shutil.rmtree(name_dir)
+            print(name_dir)
             print("end")
 
             # ссылка на следующую главу
@@ -78,10 +79,8 @@ def parser_mangapoisk(url, count=3):
             url = new_chapter_url
     # удаление родительской папки
     os.rmdir(name_main_dir)
-    print("End")
     return zip_dir
 
 
 if __name__ == "__main__":
     parser_mangapoisk("https://mangapoisk.ru/manga/berserk/chapter/26-240")
-
