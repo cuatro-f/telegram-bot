@@ -26,7 +26,7 @@ TOKEN = '5237678741:AAG9O-IJYkAH3TRlVqqyM5Td2sKWNwP6tsA'
 # для прокси - не работает
 REQUEST_KWARGS = {
     # 'proxy_url': 'socks5://ip:port', # Адрес прокси сервера
-    'proxy_url': get_one_proxy(), # Адрес прокси сервера
+    # 'proxy_url': get_one_proxy(), # Адрес прокси сервера
     # Опционально, если требуется аутентификация:
     # 'urllib3_proxy_kwargs': {
     #     'assert_hostname': 'False',

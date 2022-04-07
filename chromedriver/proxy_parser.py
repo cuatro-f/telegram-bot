@@ -78,12 +78,12 @@ def get_one_proxy():
         try:
             # print(i.split(':')[1])
             proxy = {i.split(':')[0]: i.split(':')[1][2:]}
-            response = requests.get(url, headers, proxies = proxy, timeout = 1)
+            response = requests.get(url, headers, proxies=proxy, timeout=1)
             if response.status_code == 200:
                 can_use.append(i)
                 return i
         except Exception as e:
-            print('проблема появляется',e)
+            print('проблема появляется', e)
     return can_use
 
 

@@ -2,8 +2,8 @@ from bs4 import BeautifulSoup
 import requests
 from user_agent import choice_user_agent
 import os
-from zipfile import ZipFile
 import shutil
+from zipfile import ZipFile
 
 
 # Заголовки
@@ -33,40 +33,49 @@ def write_html(url):
 
 
 # Парсер https://mangapoisk.ru/
-def parser_mangapoisk(url):
-    """Код для получения контента по ссылке"""
-    content = get_html(url)
-
-    soup = BeautifulSoup(content, features="lxml")
-    # список всех тегов, которые содержат ссылки на страницы манги
-    # все страницы находятся в блоке с тегом div, класс тега - chapter-images
-    print(soup.find_all("div", class_="chapter-images"))
-    items = soup.find_all("div", class_="chapter-images")[0].find_all("img")
-
-
-    # Список с ссылками на все страницы
-    array = []
-    for item in items:
-        array.append(item.get("data-src"))
-
-    page_number = 1
-    # Название файла
+def parser_mangapoisk(url, count=3):
     title = url.split("/")[4]
     postfix = url.split("/")[-1]
     name_dir = f"data\\manga\\{title}-{postfix}"
     os.mkdir(name_dir)
-    zip_dir = f'data/manga_zip/{title}-{postfix}.zip'
-    with ZipFile(f'data/manga_zip/{title}-{postfix}.zip', 'w') as myzip:
-        for i in array[1:]:
-            HEADERS['User-Agent'] = choice_user_agent()
-            img = requests.get(i, headers=HEADERS)
-            out = open(f"data\\manga\\{title}-{postfix}\\page-{page_number}.bmp", "wb")
-            out.write(img.content)
-            myzip.write(f"data\\manga\\{title}-{postfix}\\page-{page_number}.bmp")
-            page_number += 1
-            out.close()
-    # удаляем созданную папку с картинками
-    shutil.rmtree(name_dir)
+    zip_dir = f'data\\manga_zip\\{title}-{postfix}.zip'
+    with ZipFile(f'data\\manga_zip\\{title}-{postfix}.zip', 'w') as myzip:
+        for _ in range(count):
+            """Код для получения контента по ссылке"""
+            content = get_html(url)
+
+            soup = BeautifulSoup(content, features="lxml")
+            # список всех тегов, которые содержат ссылки на страницы манги
+            # все страницы находятся в блоке с тегом div, класс тега - chapter-images
+            items = soup.find_all("div", class_="chapter-images")[0].find_all("img")
+
+            # ссылка на следующую главу
+            new_chapter_url = "https://mangapoisk.ru" + soup.find("a", class_="btn-primary").get("href")
+            url = new_chapter_url
+
+            # Список с ссылками на все страницы
+            array = []
+            for item in items:
+                array.append(item.get("data-src"))
+
+            page_number = 1
+            # Название файла
+            title = url.split("/")[4]
+            postfix = url.split("/")[-1]
+            name_dir = f"{title}-{postfix}"
+            os.mkdir(name_dir)
+            zip_dir = f'{title}-{postfix}.zip'
+            for i in array[1:]:
+                HEADERS['User-Agent'] = choice_user_agent()
+                img = requests.get(i, headers=HEADERS)
+                out = open(f"{title}-{postfix}\\page-{page_number}.bmp", "wb")
+                out.write(img.content)
+                myzip.write(f"{title}-{postfix}\\page-{page_number}.bmp")
+                page_number += 1
+                out.close()
+        # удаляем созданную папку с картинками
+            shutil.rmtree(name_dir)
+            print("end")
 
     return zip_dir
 
