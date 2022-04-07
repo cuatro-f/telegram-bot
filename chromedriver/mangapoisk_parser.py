@@ -49,10 +49,6 @@ def parser_mangapoisk(url, count=3):
             # все страницы находятся в блоке с тегом div, класс тега - chapter-images
             items = soup.find_all("div", class_="chapter-images")[0].find_all("img")
 
-            # ссылка на следующую главу
-            new_chapter_url = "https://mangapoisk.ru" + soup.find("a", class_="btn-primary").get("href")
-            url = new_chapter_url
-
             # Список с ссылками на все страницы
             array = []
             for item in items:
@@ -64,7 +60,7 @@ def parser_mangapoisk(url, count=3):
             postfix = url.split("/")[-1]
             name_dir = f"{title}-{postfix}"
             os.mkdir(name_dir)
-            zip_dir = f'{title}-{postfix}.zip'
+            # zip_dir = f'{title}-{postfix}.zip'
             for i in array[1:]:
                 HEADERS['User-Agent'] = choice_user_agent()
                 img = requests.get(i, headers=HEADERS)
@@ -76,6 +72,10 @@ def parser_mangapoisk(url, count=3):
         # удаляем созданную папку с картинками
             shutil.rmtree(name_dir)
             print("end")
+
+            # ссылка на следующую главу
+            new_chapter_url = "https://mangapoisk.ru" + soup.find("a", class_="btn-primary").get("href")
+            url = new_chapter_url
 
     return zip_dir
 
