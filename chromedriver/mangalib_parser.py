@@ -18,9 +18,6 @@ HEADERS = {
 
 
 # Парср сайта mangalib
-# При парсинге используется Selenium
-# Есть минусы, которые нужно исправить, но это рабочий вариант
-# Если не будет работать, то вот видео а
 # получение страниц манги
 # count - колво глав для загрузки
 def mangalib_parser(url, count=2):
@@ -29,6 +26,11 @@ def mangalib_parser(url, count=2):
     options = webdriver.ChromeOptions()
     # передача в options user-agent
     options.add_argument(f"user-agent={choice_user_agent()}")
+    # убираем режим webdriver, это поможет сделать видимость, что запрос отправялет человек
+    options.add_argument("--disable-blink-features=AutomationControlled")
+
+    # Запуск в фоновом режиме(оконо chrome не будет открываться)
+    options.add_argument("--headless")
 
     # это нужно, так как нужен абсолютный путь к chromedriver.exe
     chromedriver_path = os.path.abspath("chromedriver.exe")
@@ -43,7 +45,6 @@ def mangalib_parser(url, count=2):
     name_main_dir = f"data\\manga\\{title}-{postfix}"
     os.mkdir(name_main_dir)
     zip_dir = f'data\\manga_zip\\{title}-{postfix}.zip'
-    res = 0
     with ZipFile(f'data\\manga_zip\\{title}-{postfix}.zip', 'w') as myzip:
         for _ in range(count):
             options.add_argument(f"user-agent={choice_user_agent()}")
@@ -62,20 +63,20 @@ def mangalib_parser(url, count=2):
                 pic_url = [i for i in array if i is not None][0]
                 pic_urls.append(pic_url)
 
-            print(res)
             page_number = 1
             title = url[0].split("/")[3]
             postfix = url[0].split("/")[4] + url[0].split("/")[5]
-            name_dir = f"{name_main_dir}\\{title}-{postfix.replace('?', '')}"
+            postfix = postfix.replace('?', '')
+            name_dir = f"data\\{title}-{postfix}"
             os.mkdir(name_dir)
             # zip_dir = f'{title}-{postfix.replace("?", "")}.zip'
             for img_url in pic_urls:
                 HEADERS['User-Agent'] = choice_user_agent()
                 page = requests.get(img_url, headers=HEADERS)
                 # out = open(f"manga\\page-{page_number}.bmp", "wb")
-                out = open(f"{name_dir}\\page-{page_number}.bmp", "wb")
+                out = open(f"data\\{title}-{postfix}\\page-{page_number}.bmp", "wb")
                 out.write(page.content)
-                myzip.write(f"{name_dir}\\page-{page_number}.bmp")
+                myzip.write(f"data\\{title}-{postfix}\\page-{page_number}.bmp")
                 page_number += 1
                 out.close()
         # удаляем созданную папку с картинками
