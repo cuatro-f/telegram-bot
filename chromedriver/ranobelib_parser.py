@@ -54,8 +54,10 @@ def ranobelib_parser(url, count=2):
             next_chapter_url = content.find("a", class_="button_label_right").get("href")
             url = next_chapter_url
 
-    return zip_dir
+    print(zip_dir)
+    return '111'
+    # return zip_dir
 
 
 if __name__ == "__main__":
-    ranobelib_parser("https://ranobelib.me/ascendance-of-a-bookworm-novel/v15/c361?bid=6873")
+    print(ranobelib_parser("https://ranobelib.me/ascendance-of-a-bookworm-novel/v15/c361?bid=6873"))
