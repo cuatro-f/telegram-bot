@@ -4,8 +4,11 @@ from user_agent import choice_user_agent
 import os
 import shutil
 from zipfile import ZipFile
+from data_db import db_session
+from data_db.manga import Manga
 
 WEBSITE = 'https://mangapoisk.ru'
+db_session.global_init("db/catalog_manga.sqlite")
 
 # Заголовки
 HEADERS = {
@@ -84,15 +87,23 @@ def get_url_manga_frst_page(url):
     return href
 
 
-def parser_catalog(url_catalog):
-    for i in range(3):
+def parser_catalog(url_catalog, st=1, end=2):
+    db_sess = db_session.create_session()
+    for i in range(st, end + 1):
         url_list = get_url_list_manga(url_catalog)
         # get_name_url_manga(url_list[0])
         for url in url_list:
-            print(get_name_manga(url))
-            print(get_url_manga_frst_page(url))
+            try:
+                manga = Manga()
+                manga.name = get_name_manga(url)
+                manga.url = get_url_manga_frst_page(url)
+                db_sess.add(manga)
+                db_sess.commit()
+            except Exception:
+                pass
+        print(i + 24)
         url_catalog = url_next_page_catalog(url_catalog)
 
 
 if __name__ == "__main__":
-    parser_catalog('https://mangapoisk.ru/manga')
+    parser_catalog('https://mangapoisk.ru/manga?page=24', st=74, end=224)
