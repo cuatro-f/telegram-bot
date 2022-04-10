@@ -30,8 +30,7 @@ def write_html(url):
 
 
 # Парсер сайта https://tl.rulate.ru/
-def rulate_parser(url, count=2):
-    content = BeautifulSoup(requests.get(url=url, headers=HEADERS).text, "lxml")
+def rulate_parser(url, count=1):
     try:
         title = "download_bot_file"
         zip_dir = f"data\\novel_zip\\{title}.zip"

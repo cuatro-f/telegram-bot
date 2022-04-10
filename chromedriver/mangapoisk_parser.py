@@ -33,7 +33,7 @@ def write_html(url):
 
 
 # Парсер https://mangapoisk.ru/
-def parser_mangapoisk(url, count=3):
+def parser_mangapoisk(url, count=1):
     title = url.split("/")[4]
     postfix = url.split("/")[-1]
     name_main_dir = f"data\\manga\\{title}-{postfix}"

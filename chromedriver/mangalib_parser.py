@@ -20,7 +20,7 @@ HEADERS = {
 # Парср сайта mangalib
 # получение страниц манги
 # count - колво глав для загрузки
-def mangalib_parser(url, count=2):
+def mangalib_parser(url, count=1):
     # опции для зпроса, если я правильно понял
     # Возможно, это аналог headers из requests
     options = webdriver.ChromeOptions()

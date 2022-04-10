@@ -15,7 +15,7 @@ from bs4 import BeautifulSoup
 
 # получение текста новеллы
 # count - кол-во глав для загрузки
-def ranobelib_parser(url, count=2):
+def ranobelib_parser(url, count=1):
     options = webdriver.ChromeOptions()
     # передача в options user-agent
     options.add_argument(f"user-agent={choice_user_agent()}")
@@ -45,6 +45,8 @@ def ranobelib_parser(url, count=2):
             postfix = url.split("/")[4] + url.split("/")[5].split("?")[0]
             name_dir = f"data\\{title}-{postfix}.txt"
             with open(name_dir, mode="w", encoding="utf-8") as file:
+                file.write(f"Том {url.split('/')[4][1:]}, Глава {url.split('/')[5].split('?')[0][1:]}\n")
+            with open(name_dir, mode="a", encoding="utf-8") as file:
                 for i in text:
                     file.write(i.text + "\n")
             myzip.write(name_dir)
@@ -53,10 +55,9 @@ def ranobelib_parser(url, count=2):
 
             next_chapter_url = content.find("a", class_="button_label_right").get("href")
             url = next_chapter_url
+            time.sleep(random.randint(8, 15))
 
-    print(zip_dir)
-    return '111'
-    # return zip_dir
+    return zip_dir
 
 
 if __name__ == "__main__":
