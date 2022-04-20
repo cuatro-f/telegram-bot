@@ -138,8 +138,13 @@ def get_manga_name(update, context):
     if manga:
         if len(manga) > 1:
             context.user_data['manga'] = manga
+            if len(manga) == 0:
+                update.message.reply_text('Увы...\nУ меня не получилось найти мангу с таким названием')
+                return ConversationHandler.END
+
             update.message.reply_text('Получилось найти несколько манг с похожим названием')
-            show_links(update, context)
+            count_nums = show_links(update, context)
+            context.user_data['count'] = count_nums
             return 3
         context.user_data['url'] = manga.url
         update.message.reply_text('Сколько глав скачать?')
@@ -150,22 +155,33 @@ def get_manga_name(update, context):
 
 
 def show_links(update, context):
-    update.message.reply_text('Выберете номер нужной вам манги')
+    update.message.reply_text('Выберете номер нужной вам манги\n'
+                              '(Здесь представленны только первые 20 подходящих вариантов)')
     out = list()
     manga = context.user_data['manga']
     for i in range(len(manga)):
-        block = f'{i}: {manga[i].name}\n {manga[i].url}'
+        block = f'{i + 1}: {manga[i].name}\n {manga[i].url}'
         out.append(block)
+    count = len(out)
+    if len(out) > 20:
+        out = out[:20]
+        count = 20
     out = '\n\n'.join(out)
     update.message.reply_text(out)
+    return count
 
 
 def get_need_link(update, context):
     ind_manga = update.message.text
+
     if not ind_manga.isdigit():
         update.message.reply_text('Введите число~')
         return 3
     ind_manga = int(ind_manga)
+    if ind_manga > context.user_data['count'] or ind_manga < 1:
+        update.message.reply_text(f'Введите номер одной и представленных манг: 1-{context.user_data["count"]}')
+        return 3
+
     context.user_data['url'] = context.user_data['manga'][ind_manga].url
     update.message.reply_text('Сколько глав скачать?')
     return 2
