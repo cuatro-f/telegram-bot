@@ -178,9 +178,10 @@ def get_need_link(update, context):
         update.message.reply_text('Введите число~')
         return 3
     ind_manga = int(ind_manga) - 1
-    if ind_manga > context.user_data['count'] or ind_manga < 1:
+    if ind_manga > context.user_data['count'] - 1 or ind_manga < 0:
         update.message.reply_text(f'Введите номер одной и представленных манг: 1-{context.user_data["count"]}')
         return 3
+
 
     context.user_data['url'] = context.user_data['manga'][ind_manga].url
     update.message.reply_text('Сколько глав скачать?')
