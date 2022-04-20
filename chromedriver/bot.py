@@ -177,7 +177,7 @@ def get_need_link(update, context):
     if not ind_manga.isdigit():
         update.message.reply_text('Введите число~')
         return 3
-    ind_manga = int(ind_manga)
+    ind_manga = int(ind_manga) - 1
     if ind_manga > context.user_data['count'] or ind_manga < 1:
         update.message.reply_text(f'Введите номер одной и представленных манг: 1-{context.user_data["count"]}')
         return 3
