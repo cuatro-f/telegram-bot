@@ -22,4 +22,4 @@ def random_name_generation():
 
 
 if __name__ == "__main__":
-    print(choice_user_agent())
+    print(random_name_generation())

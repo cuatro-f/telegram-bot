@@ -17,29 +17,33 @@ HEADERS = {
 
 
 def ranobe_novels_parser(url, count=1):
-    title = url.split("/")[3]
-    zip_dir = f'data\\novel_zip\\{title}.zip'
-    with ZipFile(zip_dir, mode="w") as myzip:
-        for i in range(count):
-            HEADERS["User-Agent"] = choice_user_agent()
-            content = requests.get(url, headers=HEADERS).text
-            soup = BeautifulSoup(content, "lxml")
+    try:
+        title = url.split("/")[3]
+        zip_dir = f'data\\novel_zip\\{title}.zip'
+        with ZipFile(zip_dir, mode="w") as myzip:
+            for i in range(count):
+                HEADERS["User-Agent"] = choice_user_agent()
+                content = requests.get(url, headers=HEADERS).text
+                soup = BeautifulSoup(content, "lxml")
 
-            text = soup.find("div", class_="mt-5").find_all("p")
-            name_dir = f"data\\{title}-{i}.txt"
-            with open(name_dir, mode="w", encoding="utf-8") as file:
-                for item in text:
-                    file.write(item.text + "\n")
+                text = soup.find("div", class_="mt-5").find_all("p")
+                name_dir = f"data\\{title}-{i}.txt"
+                with open(name_dir, mode="w", encoding="utf-8") as file:
+                    for item in text:
+                        file.write(item.text + "\n")
 
-            myzip.write(name_dir)
-            os.remove(name_dir)
-            print("end")
+                myzip.write(name_dir)
+                os.remove(name_dir)
+                print("end")
 
-            next_chapter_url = soup.find("a", class_="event-right").get("href")
-            url = next_chapter_url
-            time.sleep(random.randint(3, 8))
+                next_chapter_url = soup.find("a", class_="event-right").get("href")
+                url = next_chapter_url
+                time.sleep(random.randint(3, 8))
 
-    return zip_dir
+        return zip_dir
+    except Exception as e:
+        print(e)
+        return ""
 
 
 if __name__ == "__main__":

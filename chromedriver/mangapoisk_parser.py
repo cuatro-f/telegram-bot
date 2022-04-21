@@ -47,10 +47,12 @@ def parser_mangapoisk(url, count=1):
             soup = BeautifulSoup(content, features="lxml")
             # список всех тегов, которые содержат ссылки на страницы манги
             # все страницы находятся в блоке с тегом div, класс тега - chapter-images
+            array = []
+            first_page = soup.find("div", class_="chapter-images").find("img").get("src")
+            array.append(first_page)
             items = soup.find_all("div", class_="chapter-images")[0].find_all("img")
 
             # Список с ссылками на все страницы
-            array = []
             for item in items:
                 array.append(item.get("data-src"))
 
@@ -60,19 +62,19 @@ def parser_mangapoisk(url, count=1):
             postfix = url.split("/")[-1]
             name_dir = f"data\\{title}-{postfix}"
             os.mkdir(name_dir)
-            # zip_dir = f'{title}-{postfix}.zip'
             for i in array[1:]:
                 HEADERS['User-Agent'] = choice_user_agent()
-                img = requests.get(i, headers=HEADERS)
-                out = open(f"data\\{title}-{postfix}\\page-{page_number}.bmp", "wb")
-                out.write(img.content)
-                myzip.write(f"data\\{title}-{postfix}\\page-{page_number}.bmp")
-                page_number += 1
-                out.close()
+                if i is None:
+                    pass
+                else:
+                    img = requests.get(i, headers=HEADERS)
+                    out = open(f"data\\{title}-{postfix}\\page-{page_number}.bmp", "wb")
+                    out.write(img.content)
+                    myzip.write(f"data\\{title}-{postfix}\\page-{page_number}.bmp")
+                    page_number += 1
+                    out.close()
         # удаляем созданную папку с картинками
             shutil.rmtree(name_dir)
-            print(name_dir)
-            print("end")
 
             # ссылка на следующую главу
             new_chapter_url = "https://mangapoisk.ru" + soup.find("a", class_="btn-primary").get("href")

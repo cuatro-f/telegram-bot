@@ -1,3 +1,2 @@
-arr = [1, 2]
-a, b = arr
-print(a, b)
+import requests
+print(requests.get("http://fsds"))

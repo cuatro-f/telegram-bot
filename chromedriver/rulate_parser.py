@@ -36,31 +36,35 @@ def rulate_parser(url, count=1):
         zip_dir = f"data\\novel_zip\\{title}.zip"
     except IndexError:
         zip_dir = f"data\\novel_zip\\{random_name_generation().replace('.txt', '')}.zip"
-    with ZipFile(zip_dir, mode="w") as myzip:
-        for chapter_number in range(count):
-            HEADERS["User-Agent"] = choice_user_agent()
-            content = requests.get(url, headers=HEADERS).text
-            soup = BeautifulSoup(content, "lxml")
+    try:
+        with ZipFile(zip_dir, mode="w") as myzip:
+            for chapter_number in range(count):
+                HEADERS["User-Agent"] = choice_user_agent()
+                content = requests.get(url, headers=HEADERS).text
+                soup = BeautifulSoup(content, "lxml")
 
-            text = soup.find("div", class_="content-text")
-            print(text)
-            try:
-                file_name = f"data\\download_bot_chapter{chapter_number + 1}.txt"
-            except IndexError:
-                file_name = f"data\\{random_name_generation()}"
-            with open(file_name, mode="w", encoding="utf-8") as file:
-                file.write(soup.find("h1").text + '\n')
-            with open(file_name, mode="a", encoding="utf-8") as file:
-                for item in text:
-                    file.write(item.text + '\n')
-            myzip.write(file_name)
-            os.remove(file_name)
-            print("end")
-            next_chapter_url = "https://tl.rulate.ru" + soup.find_all("a", class_="ml")[3].get("href")
-            print(next_chapter_url)
-            url = next_chapter_url
+                text = soup.find("div", class_="content-text")
+                print(text)
+                try:
+                    file_name = f"data\\download_bot_chapter{chapter_number + 1}.txt"
+                except IndexError:
+                    file_name = f"data\\{random_name_generation()}"
+                with open(file_name, mode="w", encoding="utf-8") as file:
+                    file.write(soup.find("h1").text + '\n')
+                with open(file_name, mode="a", encoding="utf-8") as file:
+                    for item in text:
+                        file.write(item.text + '\n')
+                myzip.write(file_name)
+                os.remove(file_name)
+                print("end")
+                next_chapter_url = "https://tl.rulate.ru" + soup.find_all("a", class_="ml")[3].get("href")
+                print(next_chapter_url)
+                url = next_chapter_url
 
-    return zip_dir
+        return zip_dir
+    except:
+        print("В работе парсера произошла ошибка, повторите оппытку через несколько минут или проверьте url")
+        return ""
 
 
 if __name__ == "__main__":
